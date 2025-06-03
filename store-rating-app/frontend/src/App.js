@@ -8,6 +8,7 @@ import {
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import AdminDashboard from "./components/Dashboard/AdminDashboard";
+import AdminStoreRatings from "./components/Dashboard/AdminStoreRatings";
 import AdminStores from "./components/Dashboard/AdminStores";
 import AdminUsers from "./components/Dashboard/AdminUsers";
 import OwnerDashboard from "./components/Dashboard/OwnerDashboard";
@@ -143,6 +144,14 @@ function AppRoutes() {
         element={
           <PrivateRoute roles={["Admin"]}>
             <AdminStores />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/store-ratings"
+        element={
+          <PrivateRoute roles={["Admin"]}>
+            <AdminStoreRatings />
           </PrivateRoute>
         }
       />

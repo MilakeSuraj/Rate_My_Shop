@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../App";
 
@@ -37,6 +37,7 @@ function StarRating({ value }) {
 export default function StoreDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [store, setStore] = useState(null);
   const [rating, setRating] = useState(1);
   const [yourRating, setYourRating] = useState(null);
@@ -80,6 +81,7 @@ export default function StoreDetail() {
         storeId: id,
       });
       setMsg("Rating submitted!");
+      setTimeout(() => navigate(-1), 1000); // Go back after 1s
     } catch {
       setError("Failed to submit rating");
     }
@@ -94,30 +96,127 @@ export default function StoreDetail() {
   }
 
   return (
-    <div className="container py-5">
-      <div className="card shadow mx-auto" style={{ maxWidth: 500 }}>
-        <div className="card-body">
-          <h3 className="card-title">{store.name}</h3>
+    <div className="container py-5" style={{ maxWidth: 600 }}>
+      <button
+        className="btn"
+        style={{
+          background: "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: 18,
+          borderRadius: "1.5rem",
+          padding: "0.5rem 1.7rem",
+          marginBottom: 24,
+          boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+          border: "none",
+          transition: "background 0.2s, color 0.2s",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}
+        onClick={() => navigate(-1)}
+        onMouseOver={(e) =>
+          (e.currentTarget.style.background =
+            "linear-gradient(90deg, #4e54c8 0%, #43cea2 100%)")
+        }
+        onMouseOut={(e) =>
+          (e.currentTarget.style.background =
+            "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)")
+        }
+      >
+        <svg
+          width="22"
+          height="22"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          viewBox="0 0 24 24"
+          style={{ marginRight: 7, marginBottom: 2 }}
+        >
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+        Back
+      </button>
+      <div
+        className="card shadow mx-auto"
+        style={{
+          borderRadius: "1.5rem",
+          boxShadow: "0 4px 24px 0 rgba(67,206,162,0.13)",
+          border: "none",
+          padding: 0,
+        }}
+      >
+        <div
+          className="card-body"
+          style={{
+            padding: "2.2rem 2.2rem 2rem 2.2rem",
+            background: "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+            borderRadius: "1.5rem",
+          }}
+        >
+          <h2
+            className="card-title"
+            style={{
+              fontWeight: 900,
+              fontSize: "2.2rem",
+              letterSpacing: "0.04em",
+              marginBottom: 18,
+              textAlign: "center",
+            }}
+          >
+            {store.name}
+          </h2>
           {store.image && (
-            <div className="mb-3 text-center">
+            <div className="mb-4 text-center">
               <img
                 src={store.image}
                 alt="Store"
-                style={{ maxWidth: "100%", maxHeight: 200, objectFit: "cover" }}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: 260,
+                  objectFit: "cover",
+                  borderRadius: "1rem",
+                  boxShadow: "0 2px 12px 0 rgba(67,206,162,0.10)",
+                }}
               />
             </div>
           )}
-          <p>
-            <strong>Address:</strong> {store.address}
+          <p style={{ fontSize: 18, marginBottom: 8 }}>
+            <span style={{ fontWeight: 700, color: "#232946" }}>Address:</span>{" "}
+            {store.address}
           </p>
-          <p className="d-flex align-items-center" style={{ minHeight: 32 }}>
-            <strong style={{ marginRight: 6 }}> Rating:</strong>
+          <div
+            className="d-flex align-items-center mb-4"
+            style={{
+              minHeight: 36,
+              fontSize: 18,
+              fontWeight: 700,
+              color: "#232946",
+              gap: 8,
+            }}
+          >
+            <span>Rating:</span>
             <StarRating value={parseFloat(store.averageRating ?? 0)} />
-          </p>
+            <span style={{ fontWeight: 500, color: "#888", fontSize: 16 }}>
+              ({store.averageRating ?? "N/A"})
+            </span>
+          </div>
           {msg && (
             <div
               className="alert alert-success alert-dismissible fade show"
               role="alert"
+              style={{
+                fontWeight: 600,
+                fontSize: 17,
+                borderRadius: "1.2rem",
+                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.07)",
+                border: "1.5px solid #43cea2",
+                background: "#e8f7f0",
+                color: "#232946",
+                paddingRight: 40,
+              }}
             >
               {msg}
               <button
@@ -132,6 +231,16 @@ export default function StoreDetail() {
             <div
               className="alert alert-danger alert-dismissible fade show"
               role="alert"
+              style={{
+                fontWeight: 600,
+                fontSize: 17,
+                borderRadius: "1.2rem",
+                boxShadow: "0 2px 8px 0 rgba(247,151,30,0.07)",
+                border: "1.5px solid #ff5858",
+                background: "#fff0f0",
+                color: "#232946",
+                paddingRight: 40,
+              }}
             >
               {error}
               <button
@@ -142,14 +251,25 @@ export default function StoreDetail() {
               ></button>
             </div>
           )}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ marginTop: 18 }}>
             <div className="mb-3">
-              <label className="form-label">Your Rating</label>
+              <label
+                className="form-label"
+                style={{ fontWeight: 700, fontSize: 17 }}
+              >
+                Your Rating
+              </label>
               <select
                 className="form-select"
                 value={rating}
                 onChange={(e) => setRating(Number(e.target.value))}
                 disabled={!user}
+                style={{
+                  borderRadius: "1.2rem",
+                  border: "1.5px solid #e4e5e9",
+                  fontSize: 16,
+                  padding: "0.7rem 1.2rem",
+                }}
               >
                 {[1, 2, 3, 4, 5].map((v) => (
                   <option key={v} value={v}>
@@ -158,15 +278,28 @@ export default function StoreDetail() {
                 ))}
               </select>
               {yourRating && (
-                <div className="form-text">
+                <div className="form-text" style={{ fontWeight: 600 }}>
                   Your previous rating: <b>{yourRating}</b>
                 </div>
               )}
             </div>
             <button
               type="submit"
-              className="btn btn-primary w-100"
+              className="btn"
               disabled={!user}
+              style={{
+                background: "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: 18,
+                borderRadius: "1.5rem",
+                padding: "0.7rem 2.5rem",
+                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+                border: "none",
+                transition: "background 0.2s, color 0.2s",
+                width: "100%",
+                marginTop: 8,
+              }}
             >
               Submit Rating
             </button>

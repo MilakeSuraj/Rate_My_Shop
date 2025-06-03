@@ -63,6 +63,13 @@ app.use("/api/auth", authRouter);
 app.use("/api/stores", storesRouter);
 app.use("/api/ratings", ratingsRouter);
 
+// Debug: fallback for unmatched /api/ratings/* routes
+app.use("/api/ratings/*", (req, res) => {
+  res
+    .status(404)
+    .json({ error: "No such /api/ratings route: " + req.originalUrl });
+});
+
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error("Not Found");

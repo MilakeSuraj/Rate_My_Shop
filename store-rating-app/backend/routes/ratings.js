@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Rating } = require("../models");
+const { Rating, User, Store } = require("../models");
 
 // POST submit a rating
 router.post("/", async (req, res) => {
@@ -33,15 +33,93 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET all ratings (optional, for admin)
+// GET all ratings with user and store info
 router.get("/", async (req, res) => {
   try {
-    const ratings = await Rating.findAll();
+    const ratings = await Rating.findAll({
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "email", "role"],
+        },
+        {
+          model: Store,
+          as: "store",
+          attributes: ["id", "name", "email", "address"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
     res.json({
       success: true,
       message: "Ratings fetched successfully",
       count: ratings.length,
       ratings,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// GET all ratings by userId (with user and store info)
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const ratings = await Rating.findAll({
+      where: { userId },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "email", "role"],
+        },
+        {
+          model: Store,
+          as: "store",
+          attributes: ["id", "name", "email", "address", "userId"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+    res.json({
+      success: true,
+      message: "User ratings fetched successfully",
+      count: ratings.length,
+      ratings,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// GET ratings grouped by store (each store with its ratings and user info)
+router.get("/by-store", async (req, res) => {
+  try {
+    const stores = await Store.findAll({
+      attributes: ["id", "name", "email", "address"],
+      include: [
+        {
+          model: Rating,
+          as: "ratings",
+          attributes: ["id", "rating", "userId", "createdAt", "updatedAt"],
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "name", "email", "role"],
+            },
+          ],
+        },
+      ],
+      order: [["id", "ASC"]],
+    });
+
+    res.json({
+      success: true,
+      message: "Ratings grouped by store",
+      count: stores.length,
+      stores,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

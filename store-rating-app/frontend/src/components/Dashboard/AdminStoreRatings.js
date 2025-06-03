@@ -40,7 +40,7 @@ export default function AdminStoreRatings() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await API.get("/api/stores/with-ratings");
+        const res = await API.get("/api/ratings/by-store");
         setStores(res.data.stores || []);
       } catch {
         setMsg("Failed to fetch store ratings");
@@ -50,7 +50,15 @@ export default function AdminStoreRatings() {
   }, []);
 
   return (
-    <div className="container py-4">
+    <div
+      className="container py-4"
+      style={{
+        maxWidth: 1600,
+        minWidth: 320,
+        minHeight: 600,
+        margin: "0 auto",
+      }}
+    >
       <div style={{ display: "flex", justifyContent: "center" }}>
         <button
           className="mb-4 d-flex align-items-center shadow-sm"
@@ -91,84 +99,239 @@ export default function AdminStoreRatings() {
           Back to Dashboard
         </button>
       </div>
-      <h2 className="mb-4 text-center">Store Ratings (All)</h2>
+      <h2
+        className="mb-4 text-center"
+        style={{
+          fontWeight: 900,
+          fontSize: "2.2rem",
+          letterSpacing: "0.04em",
+          color: "#232946",
+        }}
+      >
+        Store Ratings
+      </h2>
       {msg && <div className="alert alert-info">{msg}</div>}
       {stores.length === 0 ? (
         <div className="text-center text-muted">No stores found.</div>
       ) : (
-        stores.map((store) => (
-          <div key={store.id} className="card mb-4 shadow-sm">
-            <div className="card-body">
-              <h5 className="card-title">{store.name}</h5>
-              <p>
-                <strong>Owner:</strong> {store.owner ? store.owner.name : "N/A"}
-                <br />
-                <strong>Email:</strong> {store.email}
-                <br />
-                <strong>Address:</strong> {store.address}
-              </p>
-              <p>
-                <strong>Average Rating:</strong>{" "}
-                <StarRating
-                  value={
-                    store.ratings && store.ratings.length > 0
-                      ? store.ratings.reduce((sum, r) => sum + r.rating, 0) /
-                        store.ratings.length
-                      : 0
-                  }
-                />
-                <span style={{ marginLeft: 8 }}>
-                  ({store.ratings ? store.ratings.length : 0} ratings)
-                </span>
-              </p>
-              <div>
-                <h6>Ratings:</h6>
-                {!store.ratings || store.ratings.length === 0 ? (
-                  <div className="text-muted">No ratings yet.</div>
-                ) : (
-                  <table className="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th>User</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Address</th>
-                        <th>Rating</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {store.ratings.map((rating) => (
-                        <tr key={rating.id}>
-                          <td>{rating.user ? rating.user.name : "N/A"}</td>
-                          <td>{rating.user ? rating.user.email : "N/A"}</td>
-                          <td>{rating.user ? rating.user.role : "N/A"}</td>
-                          <td>{rating.user ? rating.user.address : "N/A"}</td>
-                          <td>
-                            <StarRating value={rating.rating} /> (
-                            {rating.rating})
-                          </td>
-                          <td>
-                            {rating.createdAt
-                              ? new Date(rating.createdAt).toLocaleString()
-                              : ""}
-                          </td>
-                          <td>
-                            {rating.updatedAt
-                              ? new Date(rating.updatedAt).toLocaleString()
-                              : ""}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+        <div
+          style={{
+            display: "flex",
+            gap: "2.5rem",
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          {stores.map((store) => (
+            <div
+              key={store.id}
+              style={{
+                minWidth: 370,
+                maxWidth: 420,
+                flex: "0 0 370px",
+                marginBottom: 32,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div
+                className="card shadow-sm"
+                style={{
+                  borderRadius: "1.7rem",
+                  boxShadow: "0 6px 32px 0 rgba(67,206,162,0.15)",
+                  border: "none",
+                  background:
+                    "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                    color: "#fff",
+                    borderTopLeftRadius: "1.7rem",
+                    borderTopRightRadius: "1.7rem",
+                    padding: "1.5rem 2rem 1.2rem 2rem",
+                  }}
+                >
+                  <h4
+                    style={{ fontWeight: 800, marginBottom: 0, fontSize: 24 }}
+                  >
+                    {store.name}
+                  </h4>
+                  <div style={{ fontSize: 16, opacity: 0.93 }}>
+                    <span style={{ fontWeight: 500 }}>Email:</span>{" "}
+                    {store.email}
+                  </div>
+                  <div style={{ fontSize: 16, opacity: 0.93 }}>
+                    <span style={{ fontWeight: 500 }}>Address:</span>{" "}
+                    {store.address}
+                  </div>
+                </div>
+                <div
+                  className="card-body"
+                  style={{
+                    padding: "2rem 2rem 1.3rem 2rem",
+                    flex: 1,
+                  }}
+                >
+                  <div
+                    className="mb-3 d-flex align-items-center"
+                    style={{ gap: 14, fontWeight: 700, fontSize: 19 }}
+                  >
+                    <span>Rating:</span>
+                    <StarRating
+                      value={
+                        store.ratings && store.ratings.length > 0
+                          ? store.ratings.reduce(
+                              (sum, r) => sum + r.rating,
+                              0
+                            ) / store.ratings.length
+                          : 0
+                      }
+                    />
+                  </div>
+                  <div>
+                    <h6
+                      style={{
+                        fontWeight: 800,
+                        fontSize: 17,
+                        marginBottom: 14,
+                      }}
+                    >
+                      Users:
+                    </h6>
+                    {!store.ratings || store.ratings.length === 0 ? (
+                      <div className="text-muted">No ratings yet.</div>
+                    ) : (
+                      <div
+                        style={{
+                          borderRadius: "1.1rem",
+                          background: "#f3f7fa",
+                          padding: "0.7rem 0.5rem",
+                          boxShadow: "0 1px 6px 0 rgba(67,206,162,0.07)",
+                          maxHeight: 220,
+                          overflowY: "auto",
+                        }}
+                      >
+                        {store.ratings.map((rating) => (
+                          <div
+                            key={rating.id}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 16,
+                              padding: "0.7rem 0.9rem",
+                              borderRadius: "1rem",
+                              marginBottom: 10,
+                              background: "#fff",
+                              boxShadow: "0 1px 4px 0 rgba(67,206,162,0.04)",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontWeight: 700,
+                                color: "#232946",
+                                minWidth: 90,
+                                fontSize: 16,
+                              }}
+                            >
+                              {rating.user ? rating.user.name : "N/A"}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 15,
+                                color: "#555",
+                                minWidth: 120,
+                                wordBreak: "break-all",
+                              }}
+                            >
+                              {rating.user ? rating.user.email : "N/A"}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 15,
+                                color: "#fff",
+                                background:
+                                  "linear-gradient(90deg, #4e54c8 0%, #43cea2 100%)",
+                                borderRadius: "1rem",
+                                padding: "0.2rem 1.1rem",
+                                fontWeight: 700,
+                                marginRight: 8,
+                                minWidth: 80,
+                                textAlign: "center",
+                              }}
+                            >
+                              {rating.user ? rating.user.role : "N/A"}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 4,
+                              }}
+                            >
+                              <StarRating value={rating.rating} />
+                              <span
+                                style={{
+                                  fontWeight: 700,
+                                  fontSize: 17,
+                                  marginLeft: 2,
+                                }}
+                              ></span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
+      {/* Responsive styles */}
+      <style>
+        {`
+          @media (max-width: 1200px) {
+            .container {
+              max-width: 98vw !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
+          }
+          @media (max-width: 900px) {
+            .container {
+              max-width: 100vw !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .container {
+              max-width: 100vw !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
+            .card {
+              min-width: 98vw !important;
+              max-width: 99vw !important;
+            }
+          }
+          ::-webkit-scrollbar {
+            height: 8px;
+          }
+          ::-webkit-scrollbar-thumb {
+            background: #43cea2;
+            border-radius: 4px;
+          }
+        `}
+      </style>
     </div>
   );
 }
