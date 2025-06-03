@@ -215,24 +215,104 @@ export default function Navbar() {
         <div
           className="modal show d-block"
           tabIndex="-1"
+          style={{
+            background: "rgba(44, 62, 80, 0.25)",
+            backdropFilter: "blur(4px)",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 1050,
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           onClick={() => setShowPwdModal(false)}
         >
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
+          <div
+            className="modal-dialog"
+            style={{
+              maxWidth: 420,
+              width: "95%",
+              margin: "0 auto",
+              borderRadius: "2rem",
+              boxShadow: "0 8px 48px 0 rgba(67,206,162,0.18)",
+              background: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="modal-content"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px 0 rgba(67,206,162,0.13)",
+                border: "none",
+                background: "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+                padding: "0.5rem 0.5rem 1.5rem 0.5rem",
+                position: "relative",
+              }}
+            >
               <form onSubmit={handlePwdSubmit}>
-                <div className="modal-header">
-                  <h5 className="modal-title">Change Password</h5>
+                <div
+                  className="modal-header"
+                  style={{
+                    border: "none",
+                    borderTopLeftRadius: "2rem",
+                    borderTopRightRadius: "2rem",
+                    background:
+                      "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                    color: "#fff",
+                    padding: "1.2rem 2rem 1rem 2rem",
+                    textAlign: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <h5
+                    className="modal-title"
+                    style={{
+                      fontWeight: 900,
+                      fontSize: "2rem",
+                      letterSpacing: "0.07em",
+                      width: "100%",
+                    }}
+                  >
+                    Change Password
+                  </h5>
                   <button
                     type="button"
                     className="btn-close"
+                    style={{
+                      filter: "invert(1) grayscale(1)",
+                      opacity: 0.7,
+                      marginLeft: 10,
+                    }}
                     onClick={() => setShowPwdModal(false)}
                   ></button>
                 </div>
-                <div className="modal-body">
+                <div
+                  className="modal-body"
+                  style={{
+                    padding: "1.5rem 2rem 0.5rem 2rem",
+                  }}
+                >
                   {pwdMsg && (
                     <div
                       className="alert alert-success alert-dismissible fade show"
                       role="alert"
+                      style={{
+                        borderRadius: "1.2rem",
+                        fontWeight: 600,
+                        fontSize: 16,
+                        marginBottom: 12,
+                      }}
                     >
                       {pwdMsg}
                       <button
@@ -251,6 +331,12 @@ export default function Navbar() {
                     <div
                       className="alert alert-danger alert-dismissible fade show"
                       role="alert"
+                      style={{
+                        borderRadius: "1.2rem",
+                        fontWeight: 600,
+                        fontSize: 16,
+                        marginBottom: 12,
+                      }}
                     >
                       {pwdErr}
                       <button
@@ -262,8 +348,10 @@ export default function Navbar() {
                       ></button>
                     </div>
                   )}
-                  <div className="mb-2">
-                    <label className="form-label">New Password</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      New Password
+                    </label>
                     <input
                       type="password"
                       className="form-control"
@@ -273,10 +361,18 @@ export default function Navbar() {
                       required
                       minLength={8}
                       maxLength={16}
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Confirm New Password</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Confirm New Password
+                    </label>
                     <input
                       type="password"
                       className="form-control"
@@ -286,21 +382,58 @@ export default function Navbar() {
                       required
                       minLength={8}
                       maxLength={16}
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
                 </div>
-                <div className="modal-footer">
+                <div
+                  className="modal-footer"
+                  style={{
+                    border: "none",
+                    padding: "1.2rem 2rem 1.5rem 2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
                   <button
-                    className="btn btn-secondary"
+                    className="btn"
                     type="button"
+                    style={{
+                      background: "#e4e5e9",
+                      color: "#232946",
+                      fontWeight: 700,
+                      fontSize: 17,
+                      borderRadius: "1.5rem",
+                      padding: "0.7rem 2.2rem",
+                      marginRight: 12,
+                      border: "none",
+                      transition: "background 0.2s, color 0.2s",
+                    }}
                     onClick={() => setShowPwdModal(false)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="btn btn-primary"
+                    className="btn"
                     type="submit"
                     disabled={pwdLoading}
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: 18,
+                      borderRadius: "1.5rem",
+                      padding: "0.7rem 2.5rem",
+                      boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+                      border: "none",
+                      transition: "background 0.2s, color 0.2s",
+                    }}
                   >
                     {pwdLoading ? "Updating..." : "Update Password"}
                   </button>

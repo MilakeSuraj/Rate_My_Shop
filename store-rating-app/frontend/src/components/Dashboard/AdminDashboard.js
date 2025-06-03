@@ -42,44 +42,43 @@ export default function AdminDashboard() {
         <span
           style={{
             fontWeight: 900,
-            fontSize: "3.5rem",
+            fontSize: "3.2rem",
             letterSpacing: 2,
-            background: "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            textShadow: "0 8px 32px rgba(67,206,162,0.18), 0 2px 0 #fff",
-            padding: "0.7rem 3rem",
+            color: "#232946",
+            background: "#fff",
+            textShadow: "0 4px 24px rgba(67,206,162,0.10), 0 1.5px 0 #fff",
+            padding: "1.1rem 4rem",
             borderRadius: "2.5rem",
-            boxShadow: "0 4px 32px 0 rgba(67,206,162,0.10)",
+            boxShadow: "0 8px 32px 0 rgba(67,206,162,0.13)",
             border: "2.5px solid #e4e5e9",
             transition: "box-shadow 0.2s",
             textAlign: "center",
             lineHeight: 1.1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: 420,
+            minHeight: 90,
+            margin: "0 auto",
+            fontFamily: "'Montserrat', 'Segoe UI', Arial, sans-serif",
+            boxSizing: "border-box",
           }}
         >
-          {/* Modern dashboard icon */}
           <span
             style={{
-              verticalAlign: "middle",
-              marginRight: 18,
-              marginBottom: 7,
-              background: "linear-gradient(135deg, #43cea2 0%, #4e54c8 100%)",
-              borderRadius: "50%",
-              width: 54,
-              height: 54,
-              boxShadow: "0 2px 12px 0 rgba(67,206,162,0.13)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: "100%",
+              textAlign: "center",
+              fontWeight: 900,
+              fontSize: "3.2rem",
+              letterSpacing: "0.08em",
+              color: "#232946",
+              background: "none",
+              display: "block",
+              lineHeight: 1.1,
             }}
           >
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-              <rect x="3" y="7" width="18" height="13" rx="4" fill="#43cea2" />
-              <rect x="7" y="3" width="10" height="6" rx="3" fill="#4e54c8" />
-              <circle cx="12" cy="14" r="2.5" fill="#fff" />
-            </svg>
+            Admin Dashboard
           </span>
-          <span style={{ verticalAlign: "middle" }}>Admin Dashboard</span>
         </span>
       </div>
       {msg && <div className="alert alert-info">{msg}</div>}
@@ -293,7 +292,7 @@ export default function AdminDashboard() {
           <div
             className="dashboard-card"
             style={{
-              cursor: "default",
+              cursor: "pointer", // changed from "default"
               borderRadius: "2.5rem",
               background: "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)",
               color: "#fff",
@@ -326,6 +325,7 @@ export default function AdminDashboard() {
               zIndex: hovered === 2 ? 2 : 1,
               padding: "2.7rem 2rem 2.2rem 2rem",
             }}
+            onClick={() => navigate("/admin/store-ratings")}
           >
             <div
               style={{

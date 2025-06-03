@@ -44,6 +44,7 @@ export default function AdminStores() {
     image: "",
   });
   const [msg, setMsg] = useState("");
+  const [hoveredStore, setHoveredStore] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,41 +93,89 @@ export default function AdminStores() {
 
   return (
     <div className="container py-4">
-      <button
-        className="btn btn-light mb-3 d-flex align-items-center shadow-sm"
-        style={{
-          borderRadius: "2rem",
-          padding: "0.5rem 1.2rem",
-          fontWeight: 500,
-          fontSize: 18,
-          gap: 8,
-          border: "1px solid #dee2e6",
-          transition: "background 0.2s, box-shadow 0.2s",
-        }}
-        onClick={() => navigate("/admin")}
-      >
-        <svg
-          width="22"
-          height="22"
-          fill="none"
-          stroke="#0d6efd"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          viewBox="0 0 24 24"
-          style={{ marginRight: 6 }}
-        >
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Back to Dashboard
-      </button>
-      <h2 className="mb-4 text-center">Stores</h2>
-      {msg && <div className="alert alert-info">{msg}</div>}
-      <div className="mb-4 d-flex gap-2">
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <button
-          className="btn btn-primary"
-          onClick={() => setShowStoreModal(true)}
+          className="mb-4 d-flex align-items-center shadow-sm"
+          style={{
+            borderRadius: "2rem",
+            padding: "0.7rem 1.7rem",
+            fontWeight: 600,
+            fontSize: 20,
+            gap: 10,
+            border: "none",
+            background: "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+            color: "#fff",
+            boxShadow: "0 2px 12px 0 rgba(67,206,162,0.13)",
+            transition: "background 0.2s, box-shadow 0.2s, color 0.2s",
+          }}
+          onClick={() => navigate("/admin")}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.background =
+              "linear-gradient(90deg, #4e54c8 0%, #43cea2 100%)")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.background =
+              "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)")
+          }
         >
+          <svg
+            width="24"
+            height="24"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Back to Dashboard
+        </button>
+      </div>
+      {/* Remove the Stores heading */}
+      {msg && <div className="alert alert-info">{msg}</div>}
+      <div className="mb-4 d-flex gap-2" style={{ alignItems: "center" }}>
+        <button
+          className="btn"
+          style={{
+            background: "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 18,
+            borderRadius: "1.5rem",
+            padding: "0.6rem 2.2rem",
+            boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+            border: "none",
+            transition: "background 0.2s, color 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+          onClick={() => setShowStoreModal(true)}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.background =
+              "linear-gradient(90deg, #4e54c8 0%, #43cea2 100%)")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.background =
+              "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)")
+          }
+        >
+          <svg
+            width="22"
+            height="22"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+            style={{ marginRight: 7, marginBottom: 2 }}
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
           Add Store
         </button>
       </div>
@@ -155,7 +204,34 @@ export default function AdminStores() {
           <div className="col-12 text-center text-muted">No stores found.</div>
         ) : (
           stores.map((store) => (
-            <div className="col-md-6 col-lg-4" key={store.id}>
+            <div
+              className="col-md-6 col-lg-4"
+              key={store.id}
+              onMouseEnter={() => setHoveredStore(store.id)}
+              onMouseLeave={() => setHoveredStore(null)}
+              style={{
+                transition: "all 0.33s cubic-bezier(.4,2,.6,1)",
+                zIndex: hoveredStore === store.id ? 2 : 1,
+                filter:
+                  hoveredStore === null
+                    ? "none"
+                    : hoveredStore === store.id
+                    ? "none"
+                    : "blur(2px) grayscale(0.3) brightness(0.9)",
+                opacity:
+                  hoveredStore === null
+                    ? 1
+                    : hoveredStore === store.id
+                    ? 1
+                    : 0.7,
+                transform:
+                  hoveredStore === null
+                    ? "scale(1)"
+                    : hoveredStore === store.id
+                    ? "scale(1.07)"
+                    : "scale(0.93)",
+              }}
+            >
               <div className="card h-100 shadow-sm">
                 {store.image && (
                   <img
@@ -218,22 +294,94 @@ export default function AdminStores() {
         <div
           className="modal show d-block"
           tabIndex="-1"
+          style={{
+            background: "rgba(44, 62, 80, 0.25)",
+            backdropFilter: "blur(4px)",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 1050,
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           onClick={() => setShowStoreModal(false)}
         >
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
+          <div
+            className="modal-dialog"
+            style={{
+              maxWidth: 420,
+              width: "95%",
+              margin: "0 auto",
+              borderRadius: "2rem",
+              boxShadow: "0 8px 48px 0 rgba(67,206,162,0.18)",
+              background: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="modal-content"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px 0 rgba(67,206,162,0.13)",
+                border: "none",
+                background: "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+                padding: "0.5rem 0.5rem 1.5rem 0.5rem",
+                position: "relative",
+              }}
+            >
               <form onSubmit={handleAddStore}>
-                <div className="modal-header">
-                  <h5 className="modal-title">Add Store</h5>
+                <div
+                  className="modal-header"
+                  style={{
+                    border: "none",
+                    borderTopLeftRadius: "2rem",
+                    borderTopRightRadius: "2rem",
+                    background:
+                      "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                    color: "#fff",
+                    padding: "1.2rem 2rem 1rem 2rem",
+                    textAlign: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <h5
+                    className="modal-title"
+                    style={{
+                      fontWeight: 900,
+                      fontSize: "2rem",
+                      letterSpacing: "0.07em",
+                      width: "100%",
+                    }}
+                  >
+                    Add Store
+                  </h5>
                   <button
                     type="button"
                     className="btn-close"
+                    style={{
+                      filter: "invert(1) grayscale(1)",
+                      opacity: 0.7,
+                      marginLeft: 10,
+                    }}
                     onClick={() => setShowStoreModal(false)}
                   ></button>
                 </div>
-                <div className="modal-body">
-                  <div className="mb-2">
-                    <label className="form-label">Name</label>
+                <div
+                  className="modal-body"
+                  style={{
+                    padding: "1.5rem 2rem 0.5rem 2rem",
+                  }}
+                >
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Name
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.name}
@@ -241,10 +389,18 @@ export default function AdminStores() {
                         setNewStore({ ...newStore, name: e.target.value })
                       }
                       required
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Email</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Email
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.email}
@@ -252,10 +408,18 @@ export default function AdminStores() {
                         setNewStore({ ...newStore, email: e.target.value })
                       }
                       required
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Address</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Address
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.address}
@@ -263,10 +427,18 @@ export default function AdminStores() {
                         setNewStore({ ...newStore, address: e.target.value })
                       }
                       required
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Owner (User ID)</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Owner (User ID)
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.userId}
@@ -274,10 +446,18 @@ export default function AdminStores() {
                         setNewStore({ ...newStore, userId: e.target.value })
                       }
                       required
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Image</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Image
+                    </label>
                     <input
                       className="form-control"
                       type="file"
@@ -295,11 +475,40 @@ export default function AdminStores() {
                           reader.readAsDataURL(file);
                         }
                       }}
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button className="btn btn-primary" type="submit">
+                <div
+                  className="modal-footer"
+                  style={{
+                    border: "none",
+                    padding: "1.2rem 2rem 1.5rem 2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <button
+                    className="btn"
+                    type="submit"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: 18,
+                      borderRadius: "1.5rem",
+                      padding: "0.7rem 2.5rem",
+                      boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+                      border: "none",
+                      transition: "background 0.2s, color 0.2s",
+                    }}
+                  >
                     Add Store
                   </button>
                 </div>
