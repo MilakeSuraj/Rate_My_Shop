@@ -6,6 +6,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({ users: 0, stores: 0, ratings: 0 });
   const [msg, setMsg] = useState("");
   const [hovered, setHovered] = useState(null);
+  const [pendingCount, setPendingCount] = useState(0);
   const navigate = useNavigate();
 
   // Fetch dashboard stats
@@ -28,8 +29,72 @@ export default function AdminDashboard() {
     fetchData();
   }, [msg]);
 
+  // Fetch pending requests count
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const res = await API.get("/api/auth/pending-requests");
+        setPendingCount(res.data.requests ? res.data.requests.length : 0);
+      } catch {
+        setPendingCount(0);
+      }
+    };
+    fetchPending();
+  }, []);
+
   return (
     <div className="container py-4">
+      {/* Pending Requests Button - top right */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          marginBottom: 12,
+        }}
+      >
+        <button
+          className="btn btn-warning position-relative"
+          style={{
+            fontWeight: 600,
+            fontSize: "1rem",
+            padding: "0.45rem 1.5rem 0.45rem 1.5rem",
+            borderRadius: "1.5rem",
+            boxShadow: "0 2px 8px 0 rgba(247,151,30,0.13)",
+            letterSpacing: 0.5,
+            minWidth: 160,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => navigate("/admin/requests")}
+        >
+          Pending Requests
+          {pendingCount > 0 && (
+            <span
+              style={{
+                background: "#e53935",
+                color: "#fff",
+                borderRadius: "50%",
+                minWidth: 28,
+                height: 28,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 800,
+                fontSize: 15,
+                marginLeft: 10,
+                boxShadow: "0 2px 8px 0 rgba(229,57,53,0.18)",
+                border: "2px solid #fff",
+                position: "relative",
+                top: "-2px",
+              }}
+            >
+              {pendingCount}
+            </span>
+          )}
+        </button>
+      </div>
       <div
         className="mb-5"
         style={{

@@ -905,9 +905,7 @@ export default function AdminUsers() {
                     >
                       <option value="Normal User">Normal User</option>
                       <option value="Store Owner">Store Owner</option>
-                      <option value="System Administrator">
-                        System Administrator
-                      </option>
+                      <option value="Admin">Admin</option>
                     </select>
                   </div>
                 </div>

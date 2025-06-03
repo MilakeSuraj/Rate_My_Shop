@@ -37,6 +37,7 @@ export default function StoreList() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hovered, setHovered] = useState(null);
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -65,14 +66,28 @@ export default function StoreList() {
   );
 
   return (
-    <div className="container py-5">
-      <h2 className="mb-4 text-center">Store List</h2>
-      <div className="mb-3">
+    <div className="container py-5" style={{ maxWidth: 1300 }}>
+      <div className="mb-4 d-flex justify-content-center">
         <input
           className="form-control"
-          placeholder="Search by name or address"
+          placeholder="🔍 Search by name or address"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{
+            borderRadius: "2rem",
+            border: "2px solid #43cea2",
+            fontSize: 18,
+            padding: "0.9rem 2.2rem",
+            boxShadow: "0 2px 12px 0 rgba(67,206,162,0.10)",
+            maxWidth: 420,
+            background: "linear-gradient(90deg, #f8fafc 0%, #e4e5e9 100%)",
+            fontWeight: 600,
+            color: "#232946",
+            outline: "none",
+            transition: "border 0.2s, box-shadow 0.2s",
+          }}
+          onFocus={(e) => (e.target.style.border = "2px solid #4e54c8")}
+          onBlur={(e) => (e.target.style.border = "2px solid #43cea2")}
         />
       </div>
       {loading ? (
@@ -88,9 +103,42 @@ export default function StoreList() {
               No stores found.
             </div>
           ) : (
-            filtered.map((store) => (
-              <div className="col-md-6 col-lg-4" key={store.id}>
-                <div className="card h-100 shadow-sm">
+            filtered.map((store, idx) => (
+              <div
+                className="col-md-6 col-lg-4"
+                key={store.id}
+                onMouseEnter={() => setHovered(idx)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  transition:
+                    "transform 0.25s, box-shadow 0.25s, filter 0.25s, opacity 0.25s",
+                  zIndex: hovered === idx ? 2 : 1,
+                  filter:
+                    hovered === null
+                      ? "none"
+                      : hovered === idx
+                      ? "none"
+                      : "blur(2px) grayscale(0.3) brightness(0.9)",
+                  transform:
+                    hovered === null
+                      ? "scale(1)"
+                      : hovered === idx
+                      ? "scale(1.04) translateY(-6px)"
+                      : "scale(0.97)",
+                  opacity: hovered === null ? 1 : hovered === idx ? 1 : 0.7,
+                }}
+              >
+                <div
+                  className="card h-100 shadow-sm store-card-hover"
+                  style={{
+                    borderRadius: "1.5rem",
+                    boxShadow: "0 4px 24px 0 rgba(67,206,162,0.13)",
+                    border: "none",
+                    background:
+                      "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+                    transition: "transform 0.25s, box-shadow 0.25s",
+                  }}
+                >
                   {store.image && (
                     <img
                       src={store.image}
@@ -101,19 +149,29 @@ export default function StoreList() {
                         height: 200,
                         objectFit: "cover",
                         background: "#f8f9fa",
-                        borderTopLeftRadius: "0.5rem",
-                        borderTopRightRadius: "0.5rem",
+                        borderTopLeftRadius: "1.5rem",
+                        borderTopRightRadius: "1.5rem",
                       }}
                     />
                   )}
                   <div className="card-body d-flex flex-column">
-                    <h5 className="card-title">{store.name}</h5>
-                    <p className="card-text mb-1">
+                    <h5
+                      className="card-title"
+                      style={{
+                        fontWeight: 800,
+                        fontSize: 22,
+                        color: "#232946",
+                        marginBottom: 10,
+                      }}
+                    >
+                      {store.name}
+                    </h5>
+                    <p className="card-text mb-1" style={{ fontSize: 16 }}>
                       <strong>Address:</strong> {store.address}
                     </p>
                     <p
                       className="mb-2 d-flex align-items-center"
-                      style={{ minHeight: 32 }}
+                      style={{ minHeight: 32, fontSize: 16 }}
                     >
                       <strong style={{ marginRight: 6 }}>Rating:</strong>
                       <StarRating
@@ -124,6 +182,24 @@ export default function StoreList() {
                       <a
                         href={`/stores/${store.id}`}
                         className="btn btn-outline-primary w-100"
+                        style={{
+                          borderRadius: "1.2rem",
+                          fontWeight: 700,
+                          fontSize: 17,
+                          border: "1.5px solid #4e54c8",
+                          color: "#4e54c8",
+                          background: "#f8fafc",
+                          transition: "background 0.2s, color 0.2s",
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.background =
+                            "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)";
+                          e.currentTarget.style.color = "#fff";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.background = "#f8fafc";
+                          e.currentTarget.style.color = "#4e54c8";
+                        }}
                       >
                         View
                       </a>
@@ -135,6 +211,19 @@ export default function StoreList() {
           )}
         </div>
       )}
+      <style>
+        {`
+          .store-card-hover:hover {
+            transform: scale(1.04) translateY(-6px);
+            box-shadow: 0 8px 32px 0 rgba(67,206,162,0.18);
+            z-index: 2;
+          }
+          .form-control:focus {
+            box-shadow: 0 2px 12px 0 rgba(78,84,200,0.13);
+            border: 2px solid #4e54c8;
+          }
+        `}
+      </style>
     </div>
   );
 }

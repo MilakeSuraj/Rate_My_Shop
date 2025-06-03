@@ -155,6 +155,7 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route path="/admin/requests" element={<Requests />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

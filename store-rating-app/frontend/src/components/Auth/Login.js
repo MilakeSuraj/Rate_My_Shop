@@ -6,27 +6,21 @@ import { useAuth } from "../../App";
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user, login } = useAuth();
 
   useEffect(() => {
     if (user) {
       // Already logged in, redirect to dashboard
-      if (user.role === "System Administrator") navigate("/admin");
+      if (user.role === "Admin") navigate("/admin");
       else if (user.role === "Store Owner") navigate("/owner");
       else navigate("/user");
     }
   }, [user, navigate]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
     try {
       const res = await API.post("/api/auth/login", form);
       if (res.data && res.data.success) {
@@ -34,8 +28,8 @@ export default function Login() {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         login(res.data.user);
         const user = res.data.user;
-        if (user.role === "System Administrator") {
-          navigate("/admin/dashboard");
+        if (user.role === "Admin") {
+          navigate("/admin"); // <-- change from "/admin/dashboard" to "/admin"
         } else if (user.role === "Store Owner") {
           navigate("/owner");
         } else {
@@ -52,51 +46,170 @@ export default function Login() {
       } else {
         setError("Login failed");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
   return (
-    <div className="container d-flex align-items-center justify-content-center min-vh-100">
-      <div className="card shadow p-4" style={{ maxWidth: 400, width: "100%" }}>
-        <h2 className="mb-4 text-center">Login</h2>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "'Montserrat', 'Segoe UI', Arial, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "2.2rem",
+          boxShadow:
+            "0 12px 40px 0 rgba(67,206,162,0.18), 0 2px 8px 0 rgba(67,206,162,0.10)",
+          padding: "2.2rem 1.5rem 1.7rem 1.5rem",
+          minWidth: 320,
+          maxWidth: 350,
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: 28,
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 900,
+              fontSize: "2.3rem",
+              letterSpacing: 1.5,
+              color: "#232946",
+              background: "#fff",
+              textShadow: "0 4px 24px rgba(67,206,162,0.10), 0 1.5px 0 #fff",
+              padding: "0.5rem 2rem",
+              borderRadius: "1.5rem",
+              boxShadow: "0 4px 16px 0 rgba(67,206,162,0.10)",
+              border: "2px solid #e4e5e9",
+              display: "inline-block",
+              lineHeight: 1.1,
+            }}
+          >
+            Login
+          </span>
+        </div>
+        {error && (
+          <div className="alert alert-danger text-center py-2 mb-3">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
-          {error && <div className="alert alert-danger">{error}</div>}
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label
+              htmlFor="email"
+              style={{
+                fontWeight: 700,
+                color: "#232946",
+                marginBottom: 6,
+                display: "block",
+              }}
+            >
+              Email
+            </label>
             <input
-              name="email"
+              type="email"
               className="form-control"
-              placeholder="Email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
               value={form.email}
               onChange={handleChange}
+              style={{
+                borderRadius: "1.2rem",
+                padding: "0.7rem 1.1rem",
+                fontSize: 16,
+                border: "1.5px solid #e4e5e9",
+                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.06)",
+              }}
               required
-              disabled={loading}
-              autoFocus
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Password</label>
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              style={{
+                fontWeight: 700,
+                color: "#232946",
+                marginBottom: 6,
+                display: "block",
+              }}
+            >
+              Password
+            </label>
             <input
-              name="password"
               type="password"
               className="form-control"
-              placeholder="Password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
+              style={{
+                borderRadius: "1.2rem",
+                padding: "0.7rem 1.1rem",
+                fontSize: 16,
+                border: "1.5px solid #e4e5e9",
+                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.06)",
+              }}
               required
-              disabled={loading}
             />
           </div>
           <button
             type="submit"
             className="btn btn-primary w-100"
-            disabled={loading}
+            style={{
+              fontWeight: 800,
+              fontSize: "1.15rem",
+              borderRadius: "1.5rem",
+              padding: "0.7rem 0",
+              background: "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)",
+              border: "none",
+              boxShadow: "0 2px 8px 0 rgba(67,206,162,0.13)",
+              letterSpacing: 1,
+              marginBottom: 8,
+              transition: "background 0.2s, transform 0.13s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background =
+                "linear-gradient(135deg, #185a9d 0%, #43cea2 100%)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background =
+                "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)")
+            }
           >
-            {loading ? "Logging in..." : "Login"}
+            Login
           </button>
         </form>
+        <div className="text-center mt-3">
+          <span style={{ color: "#232946", fontWeight: 600 }}>
+            Don't have an account?{" "}
+            <span
+              style={{
+                color: "#185a9d",
+                cursor: "pointer",
+                fontWeight: 700,
+                textDecoration: "underline",
+              }}
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </span>
+          </span>
+        </div>
       </div>
     </div>
   );

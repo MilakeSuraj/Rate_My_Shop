@@ -45,7 +45,10 @@ export default function OwnerDashboard() {
     image: "",
   });
   const [msg, setMsg] = useState("");
-  const [hovered, setHovered] = useState(null); // <-- add this
+  const [hovered, setHovered] = useState(null);
+  const [selectedStore, setSelectedStore] = useState(null); // <-- for modal
+  const [storeDetail, setStoreDetail] = useState(null); // <-- store info with ratings
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     const fetchOwnerStores = async () => {
@@ -84,23 +87,6 @@ export default function OwnerDashboard() {
     }
   }, [user, msg]);
 
-  // Add store (owner)
-  const handleAddStore = async (e) => {
-    e.preventDefault();
-    setMsg("");
-    try {
-      await API.post("/api/stores", {
-        ...newStore,
-        userId: user.id,
-      });
-      setMsg("Store added successfully!");
-      setShowStoreModal(false);
-      setNewStore({ name: "", email: "", address: "", image: "" });
-    } catch {
-      setMsg("Failed to add store");
-    }
-  };
-
   // Delete store (owner can only delete own)
   const handleDeleteStore = async (storeId) => {
     if (!window.confirm("Are you sure you want to delete this store?")) return;
@@ -112,6 +98,24 @@ export default function OwnerDashboard() {
     } catch {
       setMsg("Failed to delete store");
     }
+  };
+
+  // Show store detail modal
+  const handleViewStore = async (storeId) => {
+    setDetailLoading(true);
+    setSelectedStore(storeId);
+    setStoreDetail(null);
+    try {
+      // Fetch all stores with ratings, then find the one with the matching id
+      const res = await API.get("/api/ratings/by-store");
+      const found = (res.data.stores || []).find(
+        (s) => String(s.id) === String(storeId)
+      );
+      setStoreDetail(found || null);
+    } catch {
+      setStoreDetail(null);
+    }
+    setDetailLoading(false);
   };
 
   return (
@@ -131,12 +135,51 @@ export default function OwnerDashboard() {
           ></button>
         </div>
       )}
-      <button
-        className="btn btn-primary mb-3"
-        onClick={() => setShowStoreModal(true)}
-      >
-        Add Store
-      </button>
+      {/* Add Store Button */}
+      <div className="mb-4 d-flex gap-2" style={{ alignItems: "center" }}>
+        <button
+          className="btn"
+          style={{
+            background: "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 18,
+            borderRadius: "1.5rem",
+            padding: "0.6rem 2.2rem",
+            boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+            border: "none",
+            transition: "background 0.2s, color 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+          onClick={() => setShowStoreModal(true)}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.background =
+              "linear-gradient(90deg, #4e54c8 0%, #43cea2 100%)")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.background =
+              "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)")
+          }
+        >
+          <svg
+            width="22"
+            height="22"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+            style={{ marginRight: 7, marginBottom: 2 }}
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+          Add Store
+        </button>
+      </div>
       {loading ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status" />
@@ -216,12 +259,12 @@ export default function OwnerDashboard() {
                     <StarRating value={parseFloat(store.averageRating) || 0} />
                   </p>
                   <div className="mt-auto d-flex gap-2">
-                    <a
-                      href={`/stores/${store.id}`}
+                    <button
                       className="btn btn-outline-primary w-100"
+                      onClick={() => handleViewStore(store.id)}
                     >
                       View
-                    </a>
+                    </button>
                     <button
                       className="btn btn-danger w-100"
                       onClick={() => handleDeleteStore(store.id)}
@@ -236,27 +279,284 @@ export default function OwnerDashboard() {
         </div>
       )}
 
+      {/* Store Detail Modal */}
+      {selectedStore && (
+        <div
+          className="modal show d-block"
+          tabIndex="-1"
+          style={{
+            background: "rgba(44, 62, 80, 0.25)",
+            backdropFilter: "blur(4px)",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 1050,
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setSelectedStore(null)}
+        >
+          <div
+            className="modal-dialog"
+            style={{
+              maxWidth: 500,
+              width: "95%",
+              margin: "0 auto",
+              borderRadius: "2rem",
+              boxShadow: "0 8px 48px 0 rgba(67,206,162,0.18)",
+              background: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="modal-content"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px 0 rgba(67,206,162,0.13)",
+                border: "none",
+                background: "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+                padding: "0.5rem 0.5rem 1.5rem 0.5rem",
+                position: "relative",
+              }}
+            >
+              <div
+                className="modal-header"
+                style={{
+                  border: "none",
+                  borderTopLeftRadius: "2rem",
+                  borderTopRightRadius: "2rem",
+                  background:
+                    "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                  color: "#fff",
+                  padding: "1.2rem 2rem 1rem 2rem",
+                  textAlign: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <h5
+                  className="modal-title"
+                  style={{
+                    fontWeight: 900,
+                    fontSize: "2rem",
+                    letterSpacing: "0.07em",
+                    width: "100%",
+                  }}
+                >
+                  Store Details
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  style={{
+                    filter: "invert(1) grayscale(1)",
+                    opacity: 0.7,
+                    marginLeft: 10,
+                  }}
+                  onClick={() => setSelectedStore(null)}
+                ></button>
+              </div>
+              <div
+                className="modal-body"
+                style={{
+                  padding: "1.5rem 2rem 0.5rem 2rem",
+                  fontSize: 17,
+                  color: "#232946",
+                  fontWeight: 600,
+                }}
+              >
+                {detailLoading || !storeDetail ? (
+                  <div className="text-center py-4">
+                    <div
+                      className="spinner-border text-primary"
+                      role="status"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ marginBottom: 10 }}>
+                      <strong>Name:</strong> {storeDetail.name}
+                    </div>
+                    <div style={{ marginBottom: 10 }}>
+                      <strong>Email:</strong> {storeDetail.email}
+                    </div>
+                    <div style={{ marginBottom: 10 }}>
+                      <strong>Address:</strong> {storeDetail.address}
+                    </div>
+                    <div style={{ marginBottom: 10 }}>
+                      <strong>Average Rating:</strong>{" "}
+                      <StarRating
+                        value={
+                          storeDetail.ratings && storeDetail.ratings.length > 0
+                            ? storeDetail.ratings.reduce(
+                                (sum, r) => sum + r.rating,
+                                0
+                              ) / storeDetail.ratings.length
+                            : 0
+                        }
+                      />
+                    </div>
+                    <div style={{ marginBottom: 10 }}>
+                      <strong>Ratings by user:</strong>
+                      {!storeDetail.ratings ||
+                      storeDetail.ratings.length === 0 ? (
+                        <div className="text-muted">No ratings yet.</div>
+                      ) : (
+                        <ul style={{ paddingLeft: 18, marginTop: 8 }}>
+                          {storeDetail.ratings.map((r) => (
+                            <li
+                              key={r.id}
+                              style={{
+                                marginBottom: 6,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                              }}
+                            >
+                              <span style={{ fontWeight: 700 }}>
+                                {r.user ? r.user.name : "User"}
+                              </span>
+                              <StarRating value={r.rating} />
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add Store Modal */}
       {showStoreModal && (
         <div
           className="modal show d-block"
           tabIndex="-1"
+          style={{
+            background: "rgba(44, 62, 80, 0.25)",
+            backdropFilter: "blur(4px)",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 1050,
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           onClick={() => setShowStoreModal(false)}
         >
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content">
-              <form onSubmit={handleAddStore}>
-                <div className="modal-header">
-                  <h5 className="modal-title">Add Store</h5>
+          <div
+            className="modal-dialog"
+            style={{
+              maxWidth: 500,
+              width: "95%",
+              margin: "0 auto",
+              borderRadius: "2rem",
+              boxShadow: "0 8px 48px 0 rgba(67,206,162,0.18)",
+              background: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="modal-content"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px 0 rgba(67,206,162,0.13)",
+                border: "none",
+                background: "linear-gradient(135deg, #f8fafc 0%, #e4e5e9 100%)",
+                padding: "0.5rem 0.5rem 1.5rem 0.5rem",
+                position: "relative",
+              }}
+            >
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setMsg("");
+                  try {
+                    await API.post("/api/stores", {
+                      ...newStore,
+                      userId: user.id,
+                    });
+                    setMsg("Store added successfully!");
+                    setShowStoreModal(false); // close popup on success
+                    setNewStore({
+                      name: "",
+                      email: "",
+                      address: "",
+                      image: "",
+                    });
+                  } catch {
+                    setMsg("Failed to add store");
+                  }
+                }}
+              >
+                <div
+                  className="modal-header"
+                  style={{
+                    border: "none",
+                    borderTopLeftRadius: "2rem",
+                    borderTopRightRadius: "2rem",
+                    background:
+                      "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                    color: "#fff",
+                    padding: "1.2rem 2rem 1rem 2rem",
+                    textAlign: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <h5
+                    className="modal-title"
+                    style={{
+                      fontWeight: 900,
+                      fontSize: "2rem",
+                      letterSpacing: "0.07em",
+                      width: "100%",
+                    }}
+                  >
+                    Add Store
+                  </h5>
                   <button
                     type="button"
                     className="btn-close"
+                    style={{
+                      filter: "invert(1) grayscale(1)",
+                      opacity: 0.7,
+                      marginLeft: 10,
+                    }}
                     onClick={() => setShowStoreModal(false)}
                   ></button>
                 </div>
-                <div className="modal-body">
-                  <div className="mb-2">
-                    <label className="form-label">Name</label>
+                <div
+                  className="modal-body"
+                  style={{
+                    padding: "1.5rem 2rem 0.5rem 2rem",
+                  }}
+                >
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Name
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.name}
@@ -264,10 +564,20 @@ export default function OwnerDashboard() {
                         setNewStore({ ...newStore, name: e.target.value })
                       }
                       required
+                      minLength={2}
+                      maxLength={60}
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Email</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Email
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.email}
@@ -275,21 +585,38 @@ export default function OwnerDashboard() {
                         setNewStore({ ...newStore, email: e.target.value })
                       }
                       required
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Address</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Address
+                    </label>
                     <input
                       className="form-control"
                       value={newStore.address}
                       onChange={(e) =>
                         setNewStore({ ...newStore, address: e.target.value })
                       }
+                      maxLength={400}
                       required
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
-                  <div className="mb-2">
-                    <label className="form-label">Image</label>
+                  <div className="mb-3">
+                    <label className="form-label" style={{ fontWeight: 700 }}>
+                      Image
+                    </label>
                     <input
                       className="form-control"
                       type="file"
@@ -307,11 +634,40 @@ export default function OwnerDashboard() {
                           reader.readAsDataURL(file);
                         }
                       }}
+                      style={{
+                        borderRadius: "1.2rem",
+                        border: "1.5px solid #e4e5e9",
+                        fontSize: 16,
+                        padding: "0.7rem 1.2rem",
+                      }}
                     />
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button className="btn btn-primary" type="submit">
+                <div
+                  className="modal-footer"
+                  style={{
+                    border: "none",
+                    padding: "1.2rem 2rem 1.5rem 2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <button
+                    className="btn"
+                    type="submit"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #43cea2 0%, #4e54c8 100%)",
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: 18,
+                      borderRadius: "1.5rem",
+                      padding: "0.7rem 2.5rem",
+                      boxShadow: "0 2px 8px 0 rgba(67,206,162,0.10)",
+                      border: "none",
+                      transition: "background 0.2s, color 0.2s",
+                    }}
+                  >
                     Add Store
                   </button>
                 </div>
