@@ -59,6 +59,27 @@ export default function StoreList() {
     fetchStores();
   }, []);
 
+  // Add animation keyframes for fade-in up
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes fadeInUpStore {
+        from {
+          opacity: 0;
+          transform: translateY(40px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   const filtered = stores.filter(
     (s) =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -126,6 +147,8 @@ export default function StoreList() {
                       ? "scale(1.04) translateY(-6px)"
                       : "scale(0.97)",
                   opacity: hovered === null ? 1 : hovered === idx ? 1 : 0.7,
+                  animation: `fadeInUpStore 0.7s cubic-bezier(.4,1.4,.6,1) both`,
+                  animationDelay: `${idx * 0.13 + 0.1}s`,
                 }}
               >
                 <div

@@ -141,6 +141,27 @@ export default function AdminUsers() {
     return total / store.ratings.length;
   }
 
+  // Add animation keyframes for fade-in up
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes fadeInUpUser {
+        from {
+          opacity: 0;
+          transform: translateY(40px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <div className="container py-4" style={{ maxWidth: 1300 }}>
       <div style={{ display: "flex", justifyContent: "center" }}>
@@ -342,7 +363,7 @@ export default function AdminUsers() {
             No users found.
           </div>
         ) : (
-          users.map((u) => {
+          users.map((u, idx) => {
             // Remove unused avgRating variable
             return (
               <div
@@ -351,6 +372,8 @@ export default function AdminUsers() {
                 style={{
                   display: "flex",
                   alignItems: "stretch",
+                  animation: `fadeInUpUser 0.7s cubic-bezier(.4,1.4,.6,1) both`,
+                  animationDelay: `${idx * 0.13 + 0.1}s`,
                 }}
               >
                 <div

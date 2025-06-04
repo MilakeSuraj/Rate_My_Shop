@@ -3,6 +3,20 @@ import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../App";
 
+// Add keyframes for a simple fade-in animation (same as Register)
+const fadeInKeyframes = `
+@keyframes simpleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+`;
+
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -17,6 +31,16 @@ export default function Login() {
       else navigate("/user");
     }
   }, [user, navigate]);
+
+  // Inject animation keyframes into the page
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = fadeInKeyframes;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,158 +81,267 @@ export default function Login() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#fff",
+        background:
+          "radial-gradient(circle at 60% 40%, #3d3356 0%, #232135 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontFamily: "'Montserrat', 'Segoe UI', Arial, sans-serif",
+        padding: 0,
+        boxSizing: "border-box",
+        overflow: "hidden",
       }}
     >
       <div
         style={{
-          background: "#fff",
-          borderRadius: "2.2rem",
+          display: "flex",
+          flexDirection: "row",
+          background: "rgba(36, 32, 54, 0.98)",
+          borderRadius: "1.5rem",
           boxShadow:
-            "0 12px 40px 0 rgba(67,206,162,0.18), 0 2px 8px 0 rgba(67,206,162,0.10)",
-          padding: "2.2rem 1.5rem 1.7rem 1.5rem",
-          minWidth: 320,
-          maxWidth: 350,
-          width: "100%",
+            "0 16px 48px 0 rgba(67,206,162,0.16), 0 2px 8px 0 rgba(67,206,162,0.10)",
+          overflow: "hidden",
+          width: "98vw",
+          maxWidth: 700,
+          minHeight: 340,
+          height: 440,
+          alignItems: "stretch",
+          animation: "simpleFadeIn 0.8s cubic-bezier(.4,1.4,.6,1) both",
         }}
       >
+        {/* Left panel: single image only */}
         <div
           style={{
-            textAlign: "center",
-            marginBottom: 28,
+            flex: 1.1,
+            background: "linear-gradient(135deg, #2d2540 60%, #232135 100%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.2rem 0.7rem 1rem 0.7rem",
+            minWidth: 180,
+            maxWidth: 220,
+            position: "relative",
+            minHeight: 340,
+            height: "100%",
+            boxSizing: "border-box",
+            animation: "simpleFadeIn 1s both",
           }}
         >
-          <span
+          <div
             style={{
-              fontWeight: 900,
-              fontSize: "2.3rem",
-              letterSpacing: 1.5,
-              color: "#232946",
-              background: "#fff",
-              textShadow: "0 4px 24px rgba(67,206,162,0.10), 0 1.5px 0 #fff",
-              padding: "0.5rem 2rem",
-              borderRadius: "1.5rem",
-              boxShadow: "0 4px 16px 0 rgba(67,206,162,0.10)",
-              border: "2px solid #e4e5e9",
-              display: "inline-block",
-              lineHeight: 1.1,
+              flex: 1,
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0.7rem 0",
+              minHeight: 120,
+              position: "relative",
+              transition: "min-height 0.3s",
             }}
           >
-            Login
-          </span>
+            <img
+              src="/assets/images/shoplogo.png"
+              alt="Shop Logo"
+              style={{
+                width: "90%",
+                borderRadius: "1.2rem",
+                objectFit: "cover",
+                maxHeight: 140,
+                minHeight: 90,
+                boxShadow: "0 6px 32px 0 rgba(67,206,162,0.13)",
+                background: "#fff",
+                transition: "all 0.5s cubic-bezier(.4,1.4,.6,1)",
+                display: "block",
+                border: "3px solid #fff",
+                animation: "simpleFadeIn 1.1s 0.1s both",
+              }}
+            />
+          </div>
         </div>
-        {error && (
-          <div className="alert alert-danger text-center py-2 mb-3">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label
-              htmlFor="email"
-              style={{
-                fontWeight: 700,
-                color: "#232946",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-              style={{
-                borderRadius: "1.2rem",
-                padding: "0.7rem 1.1rem",
-                fontSize: 16,
-                border: "1.5px solid #e4e5e9",
-                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.06)",
-              }}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              style={{
-                fontWeight: 700,
-                color: "#232946",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={handleChange}
-              style={{
-                borderRadius: "1.2rem",
-                padding: "0.7rem 1.1rem",
-                fontSize: 16,
-                border: "1.5px solid #e4e5e9",
-                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.06)",
-              }}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn btn-primary w-100"
-            style={{
-              fontWeight: 800,
-              fontSize: "1.15rem",
-              borderRadius: "1.5rem",
-              padding: "0.7rem 0",
-              background: "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)",
-              border: "none",
-              boxShadow: "0 2px 8px 0 rgba(67,206,162,0.13)",
-              letterSpacing: 1,
-              marginBottom: 8,
-              transition: "background 0.2s, transform 0.13s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background =
-                "linear-gradient(135deg, #185a9d 0%, #43cea2 100%)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background =
-                "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)")
-            }
-          >
-            Login
-          </button>
-        </form>
-        <div className="text-center mt-3">
-          <span style={{ color: "#232946", fontWeight: 600 }}>
-            Don't have an account?{" "}
+        {/* Right panel: form */}
+        <div
+          style={{
+            flex: 2,
+            background: "#2d2540",
+            padding: "1.2rem 0.7rem 1rem 0.7rem",
+            minWidth: 0,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            boxSizing: "border-box",
+            animation: "simpleFadeIn 1.1s 0.2s both",
+            overflow: "hidden",
+            height: "100%",
+          }}
+        >
+          <div style={{ textAlign: "left", marginBottom: 10 }}>
             <span
               style={{
-                color: "#185a9d",
-                cursor: "pointer",
-                fontWeight: 700,
-                textDecoration: "underline",
+                fontWeight: 900,
+                fontSize: "1.15rem",
+                letterSpacing: 1,
+                color: "#fff",
+                background: "transparent",
+                padding: "0.1rem 0",
+                borderRadius: "1rem",
+                display: "inline-block",
+                lineHeight: 1.1,
+                textShadow: "0 2px 8px #00000022",
               }}
-              onClick={() => navigate("/register")}
             >
-              Register
+              Login
             </span>
-          </span>
+            <div
+              style={{
+                marginTop: 2,
+                color: "#bcb8d2",
+                fontWeight: 500,
+                fontSize: 12,
+              }}
+            >
+              Don't have an account?{" "}
+              <span
+                style={{
+                  color: "#b39af7",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  textDecoration: "underline",
+                }}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </span>
+            </div>
+          </div>
+          {error && (
+            <div
+              className="alert alert-danger alert-dismissible fade show"
+              role="alert"
+              style={{
+                fontWeight: 600,
+                fontSize: 17,
+                borderRadius: "1.2rem",
+                border: "1.5px solid #ff5858",
+                background: "#fff0f0",
+                color: "#232946",
+                paddingRight: 40,
+                marginBottom: 18,
+              }}
+            >
+              {error}
+              <button
+                type="button"
+                className="btn-close"
+                aria-label="Close"
+                onClick={() => setError("")}
+              ></button>
+            </div>
+          )}
+          <form
+            onSubmit={handleSubmit}
+            autoComplete="off"
+            style={{ overflow: "hidden" }}
+          >
+            <div style={{ marginBottom: 12 }}>
+              <label
+                htmlFor="email"
+                style={{
+                  color: "#bcb8d2",
+                  fontWeight: 500,
+                  marginBottom: 1,
+                  display: "block",
+                  fontSize: 11,
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value={form.email}
+                onChange={handleChange}
+                style={{
+                  borderRadius: "0.6rem",
+                  padding: "0.4rem 0.7rem",
+                  fontSize: 12,
+                  border: "1.2px solid #4d426e",
+                  background: "#251f38",
+                  color: "#fff",
+                  width: "100%",
+                  boxShadow: "0 1px 4px 0 rgba(67,206,162,0.06)",
+                }}
+                required
+              />
+            </div>
+            <div style={{ marginBottom: 18 }}>
+              <label
+                htmlFor="password"
+                style={{
+                  color: "#bcb8d2",
+                  fontWeight: 500,
+                  marginBottom: 1,
+                  display: "block",
+                  fontSize: 11,
+                }}
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                style={{
+                  borderRadius: "0.6rem",
+                  padding: "0.4rem 0.7rem",
+                  fontSize: 12,
+                  border: "1.2px solid #4d426e",
+                  background: "#251f38",
+                  color: "#fff",
+                  width: "100%",
+                  boxShadow: "0 1px 4px 0 rgba(67,206,162,0.06)",
+                }}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn btn-primary w-100"
+              style={{
+                fontWeight: 800,
+                fontSize: "0.98rem",
+                borderRadius: "0.8rem",
+                padding: "0.6rem 0",
+                background: "linear-gradient(135deg, #b39af7 0%, #7f5af0 100%)",
+                border: "none",
+                color: "#fff",
+                boxShadow: "0 2px 8px 0 rgba(67,206,162,0.13)",
+                letterSpacing: 1,
+                marginBottom: 4,
+                transition: "background 0.2s, transform 0.13s",
+                width: "100%",
+                minWidth: 0,
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background =
+                  "linear-gradient(135deg, #7f5af0 0%, #b39af7 100%)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background =
+                  "linear-gradient(135deg, #b39af7 0%, #7f5af0 100%)")
+              }
+            >
+              Login
+            </button>
+          </form>
         </div>
       </div>
     </div>
