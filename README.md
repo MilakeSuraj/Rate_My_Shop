@@ -121,4 +121,4 @@ Open [http://localhost:3001](http://localhost:3001) for frontend and [http://loc
 
 ---
 
-For more details, see the code in [frontend/src/components](frontend/src/components) and [backend/routes](backend/routes).
+For more details, see the code in [store-rating-app/frontend](https://github.com/MilakeSuraj/Rate_My_Shop/tree/master/store-rating-app/frontend) and [store-rating-app/backend](https://github.com/MilakeSuraj/Rate_My_Shop/tree/master/store-rating-app/backend).
