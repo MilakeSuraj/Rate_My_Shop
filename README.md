@@ -110,7 +110,7 @@ npm start
 | View Stores            | Yes         | Own stores only     | All stores           |
 | Add Store              | No          | Yes                 | Yes                  |
 | Delete Store           | No          | Own stores only     | Any store            |
-| Rate Store             | Yes         | No                  | No                   |
+| Rate Store             | Yes         | No                  | Yes                  |
 | View Ratings           | Own ratings | Own stores' ratings | All ratings          |
 | Manage Users           | No          | No                  | Yes                  |
 | Approve/Reject Users   | No          | No                  | Yes                  |
